@@ -7296,6 +7296,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
         assert.include(harness.continuationRequests[0]?.detail, "CHILD_DONE");
         assert.equal(harness.subagentUpdates().at(-1)?.subagent.status, "pending");
         assert.isTrue(yield* ownsRunningWork);
+        assert.isTrue(yield* harness.hasPendingBackgroundWork);
 
         yield* TestClock.adjust("30 seconds");
         yield* fenced("gpt-fence-grandchild-running");
@@ -7304,6 +7305,7 @@ describe("CodexAdapterV2 post-settle continuation", () => {
         yield* TestClock.adjust("30 seconds");
         yield* fenced("gpt-fence-grandchild-settled");
         assert.isFalse(yield* ownsRunningWork);
+        assert.isFalse(yield* harness.hasPendingBackgroundWork);
       }).pipe(
         Effect.provide(
           Layer.mergeAll(
